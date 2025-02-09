@@ -1,3 +1,6 @@
+trackastra_graphs/
+trackastra_graphs_nx/
+
 /scripts/data
 /scripts/runs
 /scripts/results

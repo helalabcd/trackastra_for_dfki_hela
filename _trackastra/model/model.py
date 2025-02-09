@@ -12,7 +12,7 @@ import yaml
 from torch import nn
 
 # NoPositionalEncoding,
-from trackastra.utils import blockwise_causal_norm
+from utils import blockwise_causal_norm
 
 from .model_parts import (
     FeedForward,
