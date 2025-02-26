@@ -1,3 +1,29 @@
+# Trackastra for dfki tracking dataset
+
+Usage:
+```
+export helapath=/path/to/HeLa_dataset/
+python run_trackastra.py
+python calculate_mota_motp.py
+```
+
+### Example reconstruction
+
+![image](https://github.com/user-attachments/assets/d4bf0419-2998-4b27-ad86-e51299e8a3c1)
+
+### MOTA/MOTP
+
+![image](https://github.com/user-attachments/assets/66c316fe-594b-4a07-9662-8e572e93e26a)
+
+
+
+![traccuracy_bar](https://github.com/user-attachments/assets/84174ac7-f658-4031-95cb-c6d9624ee338)
+
+
+
+
+### Original Readme:
+
 <div align="center">
   <img src="artwork/trackastra_logo.png" alt="Optimus Prime" style="width:25%;"/>
 </div>
