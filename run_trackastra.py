@@ -8,12 +8,51 @@ from trackastra.tracking import graph_to_ctc, graph_to_napari_tracks
 import numpy as np
 import pickle
 import tifffile as tiff
+import networkx as nx
+
+def convert_graph(b):
+    """
+    Converts a graph 'b' with node attributes:
+      - 'time': time frame (0-based)
+      - 'coords': a tuple (x, y)
+      - plus other attributes (like 'label', 'weight') that are ignored in the conversion
+      
+    into a new graph with:
+      - sequential integer keys (0, 1, 2, ...)
+      - node attributes 't', 'x', 'y'
+        where 't' is (time + 1), and (x, y) are taken from 'coords'
+      
+    Edges from the original graph are copied over with the new node IDs.
+    """
+    # Create a new directed graph (use Graph() if the original is undirected)
+    newG = nx.DiGraph()
+    
+    # Build a mapping from original node ID to new sequential node ID
+    mapping = {}
+    for new_id, old_id in enumerate(b.nodes()):
+        data = b.nodes[old_id]
+        # Convert the time attribute: add 1 so that frame 0 becomes t=1
+        t = data.get('time', 0) + 1
+        # Extract coordinates
+        coords = data.get('coords', (None, None))
+        x, y = coords
+        # Add the node with the new attributes
+
+        # NOTE: Please note how the dimensions are flipped:
+        newG.add_node(new_id, t=t, x=y, y=x)
+        mapping[old_id] = new_id
+
+    # Re-map edges using the new node IDs
+    for u, v in b.edges():
+        newG.add_edge(mapping[u], mapping[v])
+        
+    return newG
 
 HELAPATH = os.getenv('helapath')
 HELAMASKPATH = os.getenv('helamaskpath')
 
 os.system("mkdir trackastra_graphs")
-os.system("mkdir trackastra_graphs_nx")
+os.system("mkdir trackastra_graphs_nx trackastra_graphs_nx/train trackastra_graphs_nx/test")
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -84,6 +123,6 @@ for split in ("train", "test"):
           outdir=f"trackastra_graphs/{burst}",
         )
 
-        pickle.dump( track_graph, open( f"trackastra_graphs_nx/{burst}.p", "wb" ) )
+        pickle.dump( convert_graph(track_graph), open( f"trackastra_graphs_nx/{split}/{burst}.p", "wb" ) )
         
 
